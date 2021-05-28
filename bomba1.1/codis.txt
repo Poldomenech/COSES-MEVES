@@ -1,0 +1,3 @@
+clauer:2A D6 9F 80
+
+targeta:09 FF 40 E8
