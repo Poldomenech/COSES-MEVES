@@ -18,7 +18,6 @@ MFRC522 mfrc522(SS_PIN, RST_PIN); // crea objeto mfrc522 enviando pines de slave
 byte LecturaUID[4];         // crea array para almacenar el UID leido
 byte Usuario1[4]= {0x2A, 0xD6, 0x9F, 0x80} ;    // UID de tarjeta leido en programa 1
 byte Usuario2[4]= {0x09, 0xFF, 0x40, 0xE8} ;    // UID de llavero leido en programa 1
-byte teta;
 char TECLA;
 const byte FILAS=4;
 const byte COLUMNAS=4;
@@ -38,19 +37,26 @@ Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS
 int ARMED=0;
 unsigned long currentmillis=0;
 unsigned long DETONATION=10000;                                                              //temps de detonacio
-unsigned long RESETmillis=0;
-unsigned long prova=0;                                                                 
+unsigned long RESETmillis=0;                                                                
 const int POWERPin=22;                                                                       //definir pin 22 com a entrada POWER
 bool statePOWER=false;                                                                       //per guardar estat de power
-const int DEFUSEPin=21;                                                                       //definir pin de boto DEFUSE
+const int DEFUSEPin=25;                                                                       //definir pin de boto DEFUSE
 bool stateDEFUSE=false;                                                                       //per guardar estat de DEFUSE
 bool stateINTENT=false;                                                                       //memoria d'intent de DEFUSE
 byte PANT=0;  
 byte DEFUSED=0;   
-int BOOMtime=2000;                                                                           // temps entre boom/defuse i reset
+int BOOMtime=5000;                                                                           // temps entre boom/defuse i reset
 byte TERRORWIN=0;                                                                             // 1 quan peta bomba                                                                            
 const int SUICIDIPin=23;                                                                              //pin 23 sortida RESET
-bool stateSUICICI=false;
+
+bool stateSUICIDI=false;
+const int ledPin = 13;
+const int buzzerPin = 29;
+bool INTENT=0;
+
+
+
+
 
 //********** OB100 *********************************************************
 void setup() {
@@ -62,11 +68,15 @@ for(int i = 0; i < 6 ; i++)
 {                
   PASS_RANDOM[i]=random(1,10);
 }
+
+
   for (int i=0; i<6;i++)
   {
   PANT=PASS_RANDOM[i];
   Serial.print(PANT);
   }
+
+  
   INDICE=0;
   Serial.println(""); 
     SPI.begin();        // inicializa bus SPI
@@ -77,6 +87,10 @@ for(int i = 0; i < 6 ; i++)
   TERRORWIN=0;
   DEFUSED=0;
   digitalWrite(SUICIDIPin,0);
+  pinMode(ledPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+ 
 }
 
 //********** MAIN *********************************************************
@@ -84,25 +98,61 @@ void loop() {
 TECLA = teclat.getKey();      // obtiene tecla presionada y asigna a variable
 statePOWER=digitalRead(POWERPin);
 stateDEFUSE=digitalRead(DEFUSEPin);
+digitalWrite(SUICIDIPin,stateSUICIDI);
+INTENTDONE();
+ 
 
 switch (ARMED)
 {
   case 0:
 PLANTAR();
+RESETmillis=millis();
   break;
 
 case 1:
       
   PLANTADA();
+  if (stateDEFUSE==1)
+  {
   DESACTIVAR();
+  FORZOSA();
+  INTENT=1;
+  
+  }
+  else
+  {
+    
+  }
   RESETmillis=millis();  
  
   break;
 
 case 2:
  RESET();
+ if (TERRORWIN==1)
+ {
+
+    tone(buzzerPin, 100);
+    digitalWrite(ledPin, HIGH);
+    delay(100);
+
+    noTone(buzzerPin);
+    digitalWrite(ledPin, LOW);
+    delay(100);
+
+    
+  }
+  else if(DEFUSED==1)
+  {
+    
+  }
+  else 
+  {
+    noTone(buzzerPin);
+    digitalWrite(ledPin, LOW);
+  }
  
-break;
+
           
                          
 
@@ -118,11 +168,11 @@ void PLANTADA()
   {
     Serial.println("BOOOOOOM!");
     TERRORWIN=1;
-    RESET();
+    ARMED=2;
   }
   else if (millis()-currentmillis<=DETONATION)
   {
-    Serial.println(millis()-currentmillis);
+                                              //temps en pantalla
     
   }   
 }
@@ -182,14 +232,35 @@ boolean comparaUID(byte lectura[],byte usuario[]) // funcion comparaUID
 //***********************************************************************
 void FORZOSA()
 {
-  
+  if (TECLA)                  // comprueba que se haya presionado una tecla
+  {
+    PASS[INDICE] = TECLA-48;    // almacena en array la tecla presionada
+    INDICE++;                 // incrementa indice en uno
+    Serial.print(TECLA);    // envia a monitor serial la tecla presionada  
+  }
+
+  if(INDICE == 6)       // si ya se almacenaron los 6 digitos
+  {
+    if(strcmp(PASS, PASS_RANDOM)==0)   // compara clave ingresada con clave maestra
+    {
+      Serial.println(" Correcta");  // imprime en monitor serial que es correcta la clave
+      ARMED=2;
+      DEFUSED=1;
+      currentmillis=millis();
+       for (int i=0; i<6;i++)
+       {
+       PASS[i]=0;
+       }
+      INDICE = 0;
+    }
+    else
+    {
+      Serial.println(" Incorrecta");  // imprime en monitor serial que es incorrecta la clave
+      INDICE = 0;   
+    } 
+  }  
 }
-
-
-
-
 //***********************************************************************
-
 void PLANTAR()
 {
   switch (statePOWER)
@@ -209,7 +280,7 @@ void PLANTAR()
       Serial.println(" Correcta");  // imprime en monitor serial que es correcta la clave
       ARMED=1;
       currentmillis=millis();
-       Serial.println(ARMED);
+    
        for (int i=0; i<6;i++)
        {
        PASS[i]=0;
@@ -227,13 +298,26 @@ void PLANTAR()
 }
 
 //***********************************************************************
-
 void RESET()
 {
   if(millis()-RESETmillis>BOOMtime)
   {
-      digitalWrite(SUICIDIPin,HIGH);                                                                //programa
-      
+    stateSUICIDI=1;                                                                //programa
+  }
+  else
+  {
 
+
+  }
 }
+
+//***********************************************************************
+
+void INTENTDONE()
+{
+   if(INTENT==1&&stateDEFUSE==0&&DEFUSED==0)
+  {
+    TERRORWIN=1;
+    ARMED=2;
+  }
 }
