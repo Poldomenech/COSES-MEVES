@@ -38,6 +38,7 @@ Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS
 bool ARMED=0;
 unsigned long currentmillis=0;
 unsigned long DETONATION=10000;                                                              //temps de detonacio
+unsigned long RESETmillis=0;                                                                 
 const int POWERPin=22;                                                                       //definir pin 22 com a entrada POWER
 bool statePOWER=false;                                                                       //per guardar estat de power
 const int DEFUSEPin=21;                                                                       //definir pin de boto DEFUSE
@@ -45,9 +46,9 @@ bool stateDEFUSE=false;                                                         
 bool stateINTENT=false;                                                                       //memoria d'intent de DEFUSE
 byte PANT=0;  
 byte DEFUSED=0;   
-byte BOOMtime=2000;                                                                           // temps entre boom/defuse i reset
+int BOOMtime=2000;                                                                           // temps entre boom/defuse i reset
 byte TERRORWIN=0;                                                                             // 1 quan peta bomba                                                                            
-
+const int SUICIDIPin=23;                                                                              //pin 23 sortida RESET
 
 //********** OB100 *********************************************************
 void setup() {
@@ -70,6 +71,10 @@ for(int i = 0; i < 6 ; i++)
   mfrc522.PCD_Init();     // inicializa modulo lector 
   pinMode(POWERPin,INPUT);                                                  //definir POWER com a entrada
   pinMode(DEFUSEPin, INPUT);                                                //definir DEFUSE com a entrada
+  pinMode(SUICIDIPin,OUTPUT);                                               //definir SUICIDI com a sortida
+  TERRORWIN=0;
+  DEFUSED=0;
+  digitalWrite(SUICIDIPin,0);
 }
 
 //********** MAIN *********************************************************
@@ -88,6 +93,7 @@ case 1:
       
   PLANTADA();
   DESACTIVAR();
+  RESET();
   break;
           
                          
@@ -141,11 +147,13 @@ void DESACTIVAR()
           {
             Serial.println("CLAUER"); // si retorna verdadero muestra texto bienvenida  
              DEFUSED=1;
+             ARMED=0;
           }
           else if(comparaUID(LecturaUID, Usuario2)) // llama a funcion comparaUID con Usuario2
           {
             Serial.println("TARGETA"); // si retorna verdadero muestra texto bienvenida
             DEFUSED=1;
+            ARMED=0;
           }
            else           // si retorna falso
            {
@@ -184,7 +192,6 @@ void PLANTAR()
   if (TECLA)                  // comprueba que se haya presionado una tecla
   {
     PASS[INDICE] = TECLA-48;    // almacena en array la tecla presionada
-    //Serial.println(INDICE);
     INDICE++;                 // incrementa indice en uno
     Serial.print(TECLA);    // envia a monitor serial la tecla presionada  
   }
@@ -217,5 +224,13 @@ void PLANTAR()
 
 void RESET()
 {
-  
+  if((TERRORWIN==1||DEFUSED==1)&&(millis()-RESETmillis>BOOMtime))
+  {
+      digitalWrite(SUICIDIPin,1);                                                                //programa
+  }
+  else if((TERRORWIN||DEFUSED)==0)
+  {
+      RESETmillis=millis();                                                                     //programa
+       digitalWrite(SUICIDIPin,0);
+  }
 }
