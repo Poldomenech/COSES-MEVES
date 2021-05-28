@@ -37,7 +37,7 @@ byte INDICE=0;
 Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 bool ARMED=0;
 unsigned long currentmillis=0;
-unsigned long DETONATION=5000;                                                           //temps de detonacio
+unsigned long DETONATION=10000;                                                           //temps de detonacio
 
 
 void setup() {
@@ -145,25 +145,33 @@ void DESACTIVAR()
     Serial.print("DESACTIVADA AMB:");       // muestra texto UID:
     for (byte i = 0; i < mfrc522.uid.size; i++) { // bucle recorre de a un byte por vez el UID
       if (mfrc522.uid.uidByte[i] < 0x10){   // si el byte leido es menor a 0x10
-        Serial.print(" 0");       // imprime espacio en blanco y numero cero
+       
         }
         else{           // sino
-          Serial.print(" ");        // imprime un espacio en blanco
+         
           }
-          Serial.print(mfrc522.uid.uidByte[i], HEX);    // imprime el byte del UID leido en hexadecimal
+         
           LecturaUID[i]=mfrc522.uid.uidByte[i];     // almacena en array el byte del UID leido      
           }
           
           Serial.print("\t");         // imprime un espacio de tabulacion             
                     
           if(comparaUID(LecturaUID, Usuario1))    // llama a funcion comparaUID con Usuario1
-            Serial.println("Bienvenido Usuario 1"); // si retorna verdadero muestra texto bienvenida
+          {
+            Serial.println("CLAUER"); // si retorna verdadero muestra texto bienvenida
+             ARMED=0;
+          }
           else if(comparaUID(LecturaUID, Usuario2)) // llama a funcion comparaUID con Usuario2
-            Serial.println("Bienvenido Usuario 2"); // si retorna verdadero muestra texto bienvenida
+          {
+            Serial.println("TARGETA"); // si retorna verdadero muestra texto bienvenida
+            ARMED=0;
+          }
            else           // si retorna falso
+           {
             Serial.println("No te conozco");    // muestra texto equivalente a acceso denegado          
                   
-                  mfrc522.PICC_HaltA();     // detiene comunicacion con tarjeta                
+                  mfrc522.PICC_HaltA();     // detiene comunicacion con tarjeta 
+           }               
 }
 
 boolean comparaUID(byte lectura[],byte usuario[]) // funcion comparaUID
