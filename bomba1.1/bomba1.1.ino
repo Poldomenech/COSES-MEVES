@@ -38,9 +38,15 @@ Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS
 bool ARMED=0;
 unsigned long currentmillis=0;
 unsigned long DETONATION=10000;                                                              //temps de detonacio
-
 const int POWERPin=22;                                                                       //definir pin 22 com a entrada POWER
 bool statePOWER=false;                                                                       //per guardar estat de power
+const int DEFUSEPin=21;                                                                       //definir pin de boto DEFUSE
+bool stateDEFUSE=false;                                                                       //per guardar estat de DEFUSE
+bool stateINTENT=false;                                                                       //memoria d'intent de DEFUSE
+byte PANT=0;  
+byte DEFUSED=0;   
+byte BOOMtime=2000;                                                                           // temps entre boom/defuse i reset
+byte TERRORWIN=0;                                                                             // 1 quan peta bomba                                                                            
 
 
 //********** OB100 *********************************************************
@@ -55,21 +61,22 @@ for(int i = 0; i < 6 ; i++)
 }
   for (int i=0; i<6;i++)
   {
-  INDICE=PASS_RANDOM[i];
-  Serial.print(INDICE);
+  PANT=PASS_RANDOM[i];
+  Serial.print(PANT);
   }
   INDICE=0;
   Serial.println(""); 
     SPI.begin();        // inicializa bus SPI
   mfrc522.PCD_Init();     // inicializa modulo lector 
   pinMode(POWERPin,INPUT);                                                  //definir POWER com a entrada
+  pinMode(DEFUSEPin, INPUT);                                                //definir DEFUSE com a entrada
 }
 
 //********** MAIN *********************************************************
 void loop() {
 TECLA = teclat.getKey();      // obtiene tecla presionada y asigna a variable
 statePOWER=digitalRead(POWERPin);
-
+stateDEFUSE=digitalRead(DEFUSEPin);
 
 switch (ARMED)
 {
@@ -91,16 +98,15 @@ case 1:
 
 //********** FC's *********************************************************
 
-
-
 void PLANTADA()
 { 
   if (millis()-currentmillis>DETONATION)
   {
     Serial.println("BOOOOOOM!");
-    ARMED=0;
+    TERRORWIN=1;
+    RESET();
   }
-  else
+  else if (millis()-currentmillis<=DETONATION)
   {
     Serial.println(millis()-currentmillis);
     delay(500); 
@@ -133,13 +139,13 @@ void DESACTIVAR()
                     
           if(comparaUID(LecturaUID, Usuario1))    // llama a funcion comparaUID con Usuario1
           {
-            Serial.println("CLAUER"); // si retorna verdadero muestra texto bienvenida
-             ARMED=0;
+            Serial.println("CLAUER"); // si retorna verdadero muestra texto bienvenida  
+             DEFUSED=1;
           }
           else if(comparaUID(LecturaUID, Usuario2)) // llama a funcion comparaUID con Usuario2
           {
             Serial.println("TARGETA"); // si retorna verdadero muestra texto bienvenida
-            ARMED=0;
+            DEFUSED=1;
           }
            else           // si retorna falso
            {
@@ -175,7 +181,6 @@ void PLANTAR()
   switch (statePOWER)
   {
     case 1:
-  
   if (TECLA)                  // comprueba que se haya presionado una tecla
   {
     PASS[INDICE] = TECLA-48;    // almacena en array la tecla presionada
@@ -206,6 +211,11 @@ void PLANTAR()
   }
   break;
 }
+}
 
+//***********************************************************************
 
+void RESET()
+{
+  
 }
