@@ -5,7 +5,7 @@
 **                                                                               **
 **                                                                               **
 **********************************************************************************/
-//********** Includes *************************************************************
+
 //********** Variables ************************************************************
 #include <Keypad.h> 
 #include <SPI.h>      // incluye libreria bus SPI
@@ -37,9 +37,13 @@ byte INDICE=0;
 Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 bool ARMED=0;
 unsigned long currentmillis=0;
-unsigned long DETONATION=10000;                                                           //temps de detonacio
+unsigned long DETONATION=10000;                                                              //temps de detonacio
+
+const int POWERPin=22;                                                                       //definir pin 22 com a entrada POWER
+bool statePOWER=false;                                                                       //per guardar estat de power
 
 
+//********** OB100 *********************************************************
 void setup() {
 randomSeed(analogRead(A0)); 
 Serial.begin(9600);
@@ -58,53 +62,26 @@ for(int i = 0; i < 6 ; i++)
   Serial.println(""); 
     SPI.begin();        // inicializa bus SPI
   mfrc522.PCD_Init();     // inicializa modulo lector 
+  pinMode(POWERPin,INPUT);                                                  //definir POWER com a entrada
 }
 
+//********** MAIN *********************************************************
 void loop() {
 TECLA = teclat.getKey();      // obtiene tecla presionada y asigna a variable
+statePOWER=digitalRead(POWERPin);
+
 
 switch (ARMED)
 {
   case 0:
-
-  if (TECLA)                  // comprueba que se haya presionado una tecla
-  {
-    PASS[INDICE] = TECLA-48;    // almacena en array la tecla presionada
-    //Serial.println(INDICE);
-    INDICE++;                 // incrementa indice en uno
-    Serial.print(TECLA);    // envia a monitor serial la tecla presionada  
-  }
-
-  if(INDICE == 6)       // si ya se almacenaron los 6 digitos
-  {
-    if(strcmp(PASS, PASS_RANDOM)==0)   // compara clave ingresada con clave maestra
-    {
-      Serial.println(" Correcta");  // imprime en monitor serial que es correcta la clave
-      ARMED=1;
-      currentmillis=millis();
-       Serial.println(ARMED);
-       for (int i=0; i<6;i++)
-       {
-       PASS[i]=0;
-       }
-      INDICE = 0;
-    }
-    else
-    {
-      Serial.println(" Incorrecta");  // imprime en monitor serial que es incorrecta la clave
-
-    INDICE = 0;
-    
-    }
-   
-  }
+PLANTAR();
   break;
- 
+
 case 1:
       
-      PLANTADA();
-      DESACTIVAR();
-      break;
+  PLANTADA();
+  DESACTIVAR();
+  break;
           
                          
 
@@ -117,8 +94,7 @@ case 1:
 
 
 void PLANTADA()
-{
-  
+{ 
   if (millis()-currentmillis>DETONATION)
   {
     Serial.println("BOOOOOOM!");
@@ -128,8 +104,7 @@ void PLANTADA()
   {
     Serial.println(millis()-currentmillis);
     delay(500); 
-  }
-    
+  }   
 }
 
 //***********************************************************************
@@ -188,4 +163,49 @@ boolean comparaUID(byte lectura[],byte usuario[]) // funcion comparaUID
 void FORZOSA()
 {
   
+}
+
+
+
+
+//***********************************************************************
+
+void PLANTAR()
+{
+  switch (statePOWER)
+  {
+    case 1:
+  
+  if (TECLA)                  // comprueba que se haya presionado una tecla
+  {
+    PASS[INDICE] = TECLA-48;    // almacena en array la tecla presionada
+    //Serial.println(INDICE);
+    INDICE++;                 // incrementa indice en uno
+    Serial.print(TECLA);    // envia a monitor serial la tecla presionada  
+  }
+
+  if(INDICE == 6)       // si ya se almacenaron los 6 digitos
+  {
+    if(strcmp(PASS, PASS_RANDOM)==0)   // compara clave ingresada con clave maestra
+    {
+      Serial.println(" Correcta");  // imprime en monitor serial que es correcta la clave
+      ARMED=1;
+      currentmillis=millis();
+       Serial.println(ARMED);
+       for (int i=0; i<6;i++)
+       {
+       PASS[i]=0;
+       }
+      INDICE = 0;
+    }
+    else
+    {
+      Serial.println(" Incorrecta");  // imprime en monitor serial que es incorrecta la clave
+      INDICE = 0;   
+    } 
+  }
+  break;
+}
+
+
 }
