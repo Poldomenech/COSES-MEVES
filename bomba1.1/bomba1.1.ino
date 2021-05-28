@@ -45,14 +45,8 @@ for(int i = 0; i < 6 ; i++)
   Serial.print(INDICE);
   }
   INDICE=0;
-  Serial.println("");
-  
+  Serial.println("");  
 }
-
-
-
-
-
 
 void loop() {
 TECLA = teclat.getKey();      // obtiene tecla presionada y asigna a variable
@@ -66,8 +60,7 @@ switch (ARMED)
     PASS[INDICE] = TECLA-48;    // almacena en array la tecla presionada
     //Serial.println(INDICE);
     INDICE++;                 // incrementa indice en uno
-    Serial.print(TECLA);    // envia a monitor serial la tecla presionada
-    
+    Serial.print(TECLA);    // envia a monitor serial la tecla presionada  
   }
 
   if(INDICE == 6)       // si ya se almacenaron los 6 digitos
@@ -106,7 +99,7 @@ case 1:
   
 }
 
-//********** FC's *************************************************************
+//********** FC's *********************************************************
 
 
 
@@ -124,4 +117,18 @@ void PLANTADA()
     delay(500); 
   }
     
+}
+
+//***********************************************************************
+
+void DESACTIVAR()
+{
+  
+}
+
+
+//***********************************************************************
+void FORZOSA()
+{
+  
 }
