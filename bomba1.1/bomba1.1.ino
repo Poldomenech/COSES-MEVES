@@ -35,10 +35,11 @@ char PASS_RANDOM[7];
 char PASS[7];
 byte INDICE=0;
 Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS);
-bool ARMED=0;
+int ARMED=0;
 unsigned long currentmillis=0;
 unsigned long DETONATION=10000;                                                              //temps de detonacio
-unsigned long RESETmillis=0;                                                                 
+unsigned long RESETmillis=0;
+unsigned long prova=0;                                                                 
 const int POWERPin=22;                                                                       //definir pin 22 com a entrada POWER
 bool statePOWER=false;                                                                       //per guardar estat de power
 const int DEFUSEPin=21;                                                                       //definir pin de boto DEFUSE
@@ -49,6 +50,7 @@ byte DEFUSED=0;
 int BOOMtime=2000;                                                                           // temps entre boom/defuse i reset
 byte TERRORWIN=0;                                                                             // 1 quan peta bomba                                                                            
 const int SUICIDIPin=23;                                                                              //pin 23 sortida RESET
+bool stateSUICICI=false;
 
 //********** OB100 *********************************************************
 void setup() {
@@ -93,8 +95,14 @@ case 1:
       
   PLANTADA();
   DESACTIVAR();
-  RESET();
+  RESETmillis=millis();  
+ 
   break;
+
+case 2:
+ RESET();
+ 
+break;
           
                          
 
@@ -106,7 +114,7 @@ case 1:
 
 void PLANTADA()
 { 
-  if (millis()-currentmillis>DETONATION)
+  if (millis()-currentmillis>DETONATION&&DEFUSED==0)
   {
     Serial.println("BOOOOOOM!");
     TERRORWIN=1;
@@ -115,7 +123,7 @@ void PLANTADA()
   else if (millis()-currentmillis<=DETONATION)
   {
     Serial.println(millis()-currentmillis);
-    delay(500); 
+    
   }   
 }
 
@@ -134,10 +142,8 @@ void DESACTIVAR()
       if (mfrc522.uid.uidByte[i] < 0x10){   // si el byte leido es menor a 0x10
        
         }
-        else{           // sino
-         
-          }
-         
+        else{           // sino 
+          }       
           LecturaUID[i]=mfrc522.uid.uidByte[i];     // almacena en array el byte del UID leido      
           }
           
@@ -147,19 +153,19 @@ void DESACTIVAR()
           {
             Serial.println("CLAUER"); // si retorna verdadero muestra texto bienvenida  
              DEFUSED=1;
-             ARMED=0;
+             ARMED=2;
           }
           else if(comparaUID(LecturaUID, Usuario2)) // llama a funcion comparaUID con Usuario2
           {
             Serial.println("TARGETA"); // si retorna verdadero muestra texto bienvenida
             DEFUSED=1;
-            ARMED=0;
+            ARMED=2;
           }
            else           // si retorna falso
            {
-            Serial.println("No te conozco");    // muestra texto equivalente a acceso denegado          
+            Serial.println("No te conozco");    // muestra texto equivalente a acceso denegado       
                   
-                  mfrc522.PICC_HaltA();     // detiene comunicacion con tarjeta 
+            mfrc522.PICC_HaltA();     // detiene comunicacion con tarjeta 
            }               
 }
 
@@ -224,13 +230,10 @@ void PLANTAR()
 
 void RESET()
 {
-  if((TERRORWIN==1||DEFUSED==1)&&(millis()-RESETmillis>BOOMtime))
+  if(millis()-RESETmillis>BOOMtime)
   {
-      digitalWrite(SUICIDIPin,1);                                                                //programa
-  }
-  else if((TERRORWIN||DEFUSED)==0)
-  {
-      RESETmillis=millis();                                                                     //programa
-       digitalWrite(SUICIDIPin,0);
-  }
+      digitalWrite(SUICIDIPin,HIGH);                                                                //programa
+      
+
+}
 }
