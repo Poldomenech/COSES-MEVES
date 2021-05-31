@@ -69,14 +69,11 @@ for(int i = 0; i < 6 ; i++)
   PASS_RANDOM[i]=random(1,10);
 }
 
-
   for (int i=0; i<6;i++)
   {
   PANT=PASS_RANDOM[i];
   Serial.print(PANT);
   }
-
-  
   INDICE=0;
   Serial.println(""); 
     SPI.begin();        // inicializa bus SPI
@@ -89,8 +86,6 @@ for(int i = 0; i < 6 ; i++)
   digitalWrite(SUICIDIPin,0);
   pinMode(ledPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
-
- 
 }
 
 //********** MAIN *********************************************************
@@ -112,7 +107,7 @@ RESETmillis=millis();
 case 1:
       
   PLANTADA();
-  if (stateDEFUSE==1)
+  if (stateDEFUSE)
   {
   DESACTIVAR();
   FORZOSA();
@@ -124,38 +119,29 @@ case 1:
     
   }
   RESETmillis=millis();  
- 
   break;
 
 case 2:
  RESET();
  if (TERRORWIN==1)
  {
-
     tone(buzzerPin, 100);
     digitalWrite(ledPin, HIGH);
     delay(100);
 
     noTone(buzzerPin);
     digitalWrite(ledPin, LOW);
-    delay(100);
-
-    
+    delay(100);  
   }
   else if(DEFUSED==1)
   {
-    
+                                 //so per polis
   }
   else 
   {
     noTone(buzzerPin);
     digitalWrite(ledPin, LOW);
   }
- 
-
-          
-                         
-
 }
   
 }
@@ -172,8 +158,7 @@ void PLANTADA()
   }
   else if (millis()-currentmillis<=DETONATION)
   {
-                                              //temps en pantalla
-    
+                                              //temps en pantalla   
   }   
 }
 
@@ -306,8 +291,6 @@ void RESET()
   }
   else
   {
-
-
   }
 }
 
