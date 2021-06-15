@@ -153,9 +153,7 @@ void loop()
                                  //inicia lcd
   
 switch (ETAPA)
-{
-
-  
+{ 
   //nomes es pot plantar bomba
   case 1:
    TECLA = teclat.getKey();               // obtiene tecla presionada y asigna a variable
@@ -163,6 +161,7 @@ switch (ETAPA)
    PLANTAR();
    detonationTIME=millis();              
    RESET=millis();
+   
    break;
    
   //opcions defuse o DETONACIO
@@ -189,17 +188,15 @@ switch (ETAPA)
   case 3:
    if(millis()-RESET>5000)
    {
-    ETAPA=5;
-    
+    ETAPA=5;  
    }
-    lcd.setCursor(0,0);
-    lcd.print("   TERRORIST    "); 
-    lcd.setCursor(0,1); 
-    lcd.print("      WIN      "); 
-    stateLedBomba=true;
-    digitalWrite(13,stateLedBomba);
-   
-
+  lcd.setCursor(0,0);
+  lcd.print("   TERRORIST    "); 
+  lcd.setCursor(0,1); 
+  lcd.print("      WIN       "); 
+  stateLedBomba=true;
+  digitalWrite(13,stateLedBomba);
+  
   break;
 
    //polis win
@@ -219,7 +216,6 @@ switch (ETAPA)
 
   case 5:
   //etapa de reset
-
   
   prova=0;  
   comprova=0;
@@ -232,11 +228,14 @@ switch (ETAPA)
   digitalWrite(11,LOW);                  //per apagar llum al fer RESET
   lcd.noBacklight();
   lcd.clear();
+  for(int i=0;i<4;i++)
+  {
+  ForcaNOW[i]=0;
+  }
   ETAPA=1;
+  
   break;
- 
-
-}
+ }
 }
 
 //***********************************************************************
@@ -439,43 +438,31 @@ else
       validacio2=1;
   }
  }
+    
     switch (validacio1+validacio2)
     {
-      case 0:
-      break;
-
-      case 1:
-      //Serial.println("Defused");
-        //desactivada
+      case 1:      
+       //desactivada
      lcd.setCursor(0,0);
      lcd.print("  BOMB HAS BEEN "); 
      lcd.setCursor(0,1); 
      lcd.print("    DEFUSED!    ");     
      ETAPA=2;
      delay(2000);
-      ETAPA=4;
-      break;
+     ETAPA=4;
+     
+     break;
 
-      case 2:
-      //Serial.println("BOOOOM");
+     case 2:
+      //BOOOOM
     lcd.setCursor(0,0);
     lcd.print("    BOOOOOM!    ");
     lcd.setCursor(0,1); 
     lcd.print("LA LIASTE BOLUDO");
-    delay(2000);
-      
-    /*lcd.setCursor(0,0);
-    lcd.print("   TERRORIST    "); 
-    lcd.setCursor(0,1); 
-    lcd.print("      WIN       ");*/
-    
+    delay(2000); 
     ETAPA=3;
-      break;
-    }
-  
-
     
-   
-  }
-  
+    break;
+    }  
+  } 
 }
