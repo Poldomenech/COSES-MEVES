@@ -1,11 +1,9 @@
-
 /**********************************************************************************
 **                                                                               **
 **                         Airsoft Boom                                          **
 **                                                                               **
 **                                                                               **
 **********************************************************************************/
-
 //********** Variables ************************************************************
 #include <Keypad.h> 
 #include <SPI.h>      // incluye libreria bus SPI
@@ -14,12 +12,35 @@
 #define SS_PIN  53      // constante para referenciar pin de slave select
 #include <LiquidCrystal_I2C.h> 
 
+
+/*
+ * myDFPlayer.begin(DFPlayerSerial)
+ * myDFPlayer.volume(volume); 0-30
+ * myDFPlayer.play(); 
+ * myDFPlayer.play(5);  Reproduce el archivo 0005
+ * myDFPlayer.next();
+ * myDFPlayer.previous();
+ * myDFPlayer.pause();
+ * myDFPlayer.start();
+ * myDFPlayer.randomAll();
+ * myDFPlayer.enableLoop();
+ * myDFPlayer.disableLoop();
+ */
+#include <SoftwareSerial.h>
+#include "DFRobotDFPlayerMini.h"
+SoftwareSerial DFPlayerSerial(10,11);   //Rx, Tx
+DFRobotDFPlayerMini myDFPlayer;
+
+
 MFRC522 mfrc522(SS_PIN, RST_PIN); // crea objeto mfrc522 enviando pines de slave select y reset
-LiquidCrystal_I2C lcd(0x27,16,2); // Valor en hexadecimal per I2C + tamany horitzontalment + tamany verticalment  --> Es troba el valor amb llibreria arduino 
+LiquidCrystal_I2C lcd(0x27,16,2); // (POL) Valor en hexadecimal per I2C + tamany horitzontalment + tamany verticalment  --> Es troba el valor amb llibreria arduino 
+//LiquidCrystal_I2C lcd(0x5A,16,2); // (PAU)
 
 byte LecturaUID[4];         // crea array para almacenar el UID leido
-byte Usuario1[4]= {0x2A, 0xD6, 0x9F, 0x80} ;    // UID de tarjeta leido en programa 1
-byte Usuario2[4]= {0x09, 0xFF, 0x40, 0xE8} ;    // UID de llavero leido en programa 1
+byte Usuario1[4]= {0x2A, 0xD6, 0x9F, 0x80} ;    // UID de tarjeta leido en programa 1   ----Rfid POL 1----
+byte Usuario2[4]= {0x09, 0xFF, 0x40, 0xE8} ;    // UID de llavero leido en programa 1   ----Rfid POL 2----
+//byte Usuario1[4]= {0xD7, 0x1D, 0xC7, 0xB5} ;   //                                     ----Rfid Pau 1----
+//byte Usuario2[4]= {0x5A, 0x8C, 0xB8, 0x81} ;   //                                     ----Rfid Pau 2----
 byte teta;
 char TECLA;
 const byte FILAS=4;
@@ -57,9 +78,15 @@ bool stateSUICIDI = false;
 
 //********** OB100 *********************************************************
 void setup() 
-{
+{Serial.begin(9600);
+ DFPlayerSerial.begin(9600);
+ myDFPlayer.begin(DFPlayerSerial);
+ myDFPlayer.volume(5);                        //De 0 a 30
+
+
+  
   randomSeed(analogRead(A0)); 
-  Serial.begin(9600);
+  
   Serial.println (" ");
   Serial.print ("PASS ");
   lcd.init();
@@ -96,6 +123,9 @@ void loop() {
   statePOWER=digitalRead(POWERPin);
   stateDEFUSE=digitalRead(DEFUSEPin);
   digitalWrite(SUICIDIPin,stateSUICIDI);
+  // myDFPlayer.play(5);
+    // myDFPlayer.randomAll();
+ 
   
   switch (ARMED)
   {
@@ -108,7 +138,6 @@ void loop() {
       
       if (stateDEFUSE)   
       {
-        Serial.println("PUTA");
         DESACTIVAR();
         FORZOSA();
       }
@@ -122,6 +151,8 @@ void loop() {
   
     case 2:
       RESET();
+     
+     
       break;    
   }
 }
@@ -214,6 +245,10 @@ void BombDefused()
   ClearLcd();
   PrintInLcd(4, 0, "BOMB HAS");
   PrintInLcd(2, 1, "BEEN DEFUSED");
+   myDFPlayer.play(5);
+ myDFPlayer.disableLoop();
+
+ delay(1000);
 }
 
 boolean comparaUID(byte lectura[],byte usuario[])               
@@ -314,8 +349,7 @@ void CheckIfNumPadButtonIsPressed()
     PASS[INDICE] = TECLA-48;    
     INDICE++;                 
     Serial.print(buttonIsPressed);   
-    lcd.setCursor(INDICE+1,1);
-    lcd.print(TECLA);
+ 
   }  
 }
 
@@ -345,7 +379,7 @@ void CheckIfAllButtonsArePressed()
     {
       Serial.println(" Incorrecta");  
       INDICE = 0; 
-    3+  ClearLcd();                                  //afegit 2  
+      ClearLcd();                                  //afegit 2  
     } 
   } 
 }

@@ -7,7 +7,7 @@
 **********************************************************************************/
 
 //********** Variables ************************************************************
-#include <Keypad.h> 
+//#include <Keypad.h> 
 #include <SPI.h>      // incluye libreria bus SPI
 #include <MFRC522.h>      // incluye libreria especifica para MFRC522
 #define RST_PIN  5      // constante para referenciar pin de reset
@@ -19,21 +19,21 @@ byte LecturaUID[4];         // crea array para almacenar el UID leido
 byte Usuario1[4]= {0x2A, 0xD6, 0x9F, 0x80} ;    // UID de tarjeta leido en programa 1
 byte Usuario2[4]= {0x09, 0xFF, 0x40, 0xE8} ;    // UID de llavero leido en programa 1
 char TECLA;
-const byte FILAS=4;
-const byte COLUMNAS=4;
-char keys[FILAS][COLUMNAS]=
+//const byte FILAS=4;
+//const byte COLUMNAS=4;
+/*char keys[FILAS][COLUMNAS]=
 {
   {'1','2','3','A'},
   {'4','5','6','B'},
   {'7','8','9','C'},
   {'*','0','#','D'}
-};
-byte pinesFilas[FILAS] = {9,8,7,6};   
-byte pinesColumnas[COLUMNAS] = {28,4,3,2}; 
-char PASS_RANDOM[7];
-char PASS[7];
-byte INDICE=0;
-Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS);
+};*/
+//byte pinesFilas[FILAS] = {9,8,7,6};   
+//byte pinesColumnas[COLUMNAS] = {28,4,3,2}; 
+//char PASS_RANDOM[7];
+//char PASS[7];
+//byte INDICE=0;
+//Keypad teclat=Keypad(makeKeymap(keys),pinesFilas, pinesColumnas, FILAS, COLUMNAS);
 int ARMED=0;
 unsigned long currentmillis=0;
 unsigned long DETONATION=10000;                                                              //temps de detonacio

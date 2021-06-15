@@ -12,6 +12,8 @@
  * myDFPlayer.disableLoop();
  */
 
+
+
 #include <SoftwareSerial.h>
 #include "DFRobotDFPlayerMini.h"
 
@@ -45,6 +47,7 @@ void loop() {
   }
   
   delay(1000);
+  Serial.println("ok");
 }
 
 void buttonPressed(){
