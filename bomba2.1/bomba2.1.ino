@@ -238,28 +238,9 @@ switch (ETAPA)
 
   case 5:
   //etapa de reset
+  tocaladenou();
   
-  prova=0;  
-  comprova=0;
-  estatconnectat=false; 
-  validacio1=0;
-  validacio2=0;
-  stateLedBomba=false;
-  statePOWER=false;
-  digitalWrite(13,LOW);                  //per apagar llum al fer RESET
-  digitalWrite(11,LOW);                  //per apagar llum al fer RESET
-  lcd.noBacklight();
-  lcd.clear();
-  for(int i=0;i<4;i++)
-  {
-  ForcaNOW[i]=1;
-  }
-  ETAPA=1;
-  POTRA=random(0,4);
-  for(int i = 0; i < 5 ; i++)                
-  {                
-    PASS_RANDOM[i]=random(1,10);
-  }
+  
   
   break;
  }
@@ -481,4 +462,29 @@ else
     break;
     }  
   } 
+}
+
+void tocaladenou()
+{
+  prova=0;  
+  comprova=0;
+  estatconnectat=false; 
+  validacio1=0;
+  validacio2=0;
+  stateLedBomba=false;
+  statePOWER=false;
+  digitalWrite(13,LOW);                  //per apagar llum al fer RESET
+  digitalWrite(11,LOW);                  //per apagar llum al fer RESET
+  lcd.noBacklight();
+  lcd.clear();
+  for(int i=0;i<4;i++)
+  {
+  ForcaNOW[i]=1;
+  }
+  ETAPA=1;
+  POTRA=random(0,4);
+  for(int i = 0; i < 5 ; i++)                
+  {                
+    PASS_RANDOM[i]=random(1,10);
+  }
 }
