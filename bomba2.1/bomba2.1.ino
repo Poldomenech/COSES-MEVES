@@ -158,9 +158,31 @@ switch (ETAPA)
   case 1:
    TECLA = teclat.getKey();               // obtiene tecla presionada y asigna a variable
    statePOWER=digitalRead(POWERPin);      //mira estat del boto per armano
+
+   ForcaNOW[0]=digitalRead(ForcaPin[0]);
+   ForcaNOW[1]=digitalRead(ForcaPin[1]);
+   ForcaNOW[2]=digitalRead(ForcaPin[2]);
+   ForcaNOW[3]=digitalRead(ForcaPin[3]);
+   
+   if(strcmp(ForcaPASS, ForcaNOW)==0)
+   {
+    //les entrades FORCA estan Ok
    PLANTAR();
    detonationTIME=millis();              
    RESET=millis();
+   }
+   else if (statePOWER==1)
+   {
+    //escriure error de connexions
+    lcd.backlight();
+    lcd.setCursor(0,0);
+    lcd.print("  CHECK WIRES   "); 
+   }
+   else
+   {
+    lcd.noBacklight();
+    lcd.clear();
+   }
    
    break;
    
