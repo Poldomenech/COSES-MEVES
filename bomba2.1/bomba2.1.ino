@@ -102,8 +102,10 @@ DFRobotDFPlayerMini myDFPlayer;
  */
 
 
+
+
 //********** OB100 *********************************************************
-void setup() {
+void setup() { 
 randomSeed(analogRead(A5)); 
 Serial.begin(9600);
 pinMode(POWERPin,INPUT);                                                    //definir POWER com a entrada
@@ -140,11 +142,7 @@ digitalWrite(LedBomba,stateLedBomba);
 
  //inicia lcd
   lcd.init();  
-  lcd.noBacklight();
- 
-  
-  
-  
+  lcd.noBacklight(); 
 }
 //********** MAIN *********************************************************
 void loop() 
@@ -192,6 +190,7 @@ switch (ETAPA)
    estatconnectat=digitalRead(connectatPin);
    DETONACIO();
    libertina();
+  
    switch (estatconnectat)
    {
    case false:
@@ -463,7 +462,7 @@ else
     }  
   } 
 }
-
+//***********************************************************************
 void tocaladenou()
 {
   prova=0;  
