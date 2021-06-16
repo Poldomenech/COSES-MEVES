@@ -38,21 +38,21 @@ byte INDICE=0;
 char TECLA;
 byte LLETRA=0;
 
-//coses de la bomba
-const int POWERPin=12;                                       //definir pin 12 com a entrada POWER
+//coses de la bomba 
+const int POWERPin=12;                                                      //definir pin 12 com a entrada POWER
 bool statePOWER=false;
-const int LedBomba=13;                                       //Led de la bomba 
+const int LedBomba=13;                                                      //Led de la bomba 
 int stateLedBomba=false;
 unsigned long bip=0;                                                        //variable per les pampallugues
-unsigned long biptime=2000;                                                     //variable per les pampallugues
-const unsigned long boomTIME=100000;                                       //temps entre plantar i detonar bomba
+unsigned long biptime=2000;                                                 //variable per les pampallugues
+const unsigned long boomTIME=120000;                                        //temps entre plantar i detonar bomba
 
 //variables de detonacio
 unsigned long detonationTIME=0;
 
 //Etapes
 int ETAPA=1;
-unsigned long RESET=0;                                              //variable per reiniciar el joc
+unsigned long RESET=0;                                          //variable per reiniciar el joc
 
 //variables de desactivacio optima
 const int connectatPin=10;                                     //pin 10 es entrada de desactivador connectat
@@ -119,15 +119,15 @@ digitalWrite(LedBomba,stateLedBomba);
 
 
 
-//lcd
-lcd.noBacklight();
+  //lcd
+  lcd.noBacklight();
 
-//altaveu
+  //altaveu
   /*DFPlayerSerial.begin(9600);
   myDFPlayer.begin(DFPlayerSerial);
   myDFPlayer.volume(15);   //De 0 a 30*/
 
-//generar random
+  //generar random
   for(int i = 0; i < 5 ; i++)                
   {                
     PASS_RANDOM[i]=random(1,10);
@@ -230,9 +230,14 @@ switch (ETAPA)
   lcd.clear();
   for(int i=0;i<4;i++)
   {
-  ForcaNOW[i]=0;
+  ForcaNOW[i]=1;
   }
   ETAPA=1;
+  POTRA=random(0,4);
+  for(int i = 0; i < 5 ; i++)                
+  {                
+    PASS_RANDOM[i]=random(1,10);
+  }
   
   break;
  }
@@ -308,7 +313,6 @@ void PrintSequenceInLcd()
 {
   for (int i = 0; i < 6; i++)
   {
-  
     lcd.backlight();
     lcd.setCursor(0,0);
     lcd.print("  ");
@@ -356,10 +360,6 @@ void DETONACIO()
     lcd.setCursor(0,1);
     lcd.print("                ");
     delay(1000);
-    lcd.setCursor(0,0);
-    lcd.print("   TERRORIST    "); 
-    lcd.setCursor(0,1); 
-    lcd.print("      WIN       ");
     ETAPA=3;   
   }
   else
@@ -369,9 +369,6 @@ void DETONACIO()
    lcd.setCursor(0,1);
    sprintf(text, "     %02d:%02d     ",minuts,segons);
    lcd.print(text);
-
-   
-
   }
 
 }
@@ -398,7 +395,6 @@ void defuse()
   lcd.print("  BOMB HAS BEEN "); 
   lcd.setCursor(0,1); 
   lcd.print("    DEFUSED!    ");     
-  ETAPA=2;
   delay(2000);
   ETAPA=4;
  }
@@ -423,11 +419,10 @@ if(strcmp(ForcaPASS, ForcaNOW)==0)
 }
 else
 {
-  validacio1=1;
+ validacio1=1;
  ForcaNOW[POTRA]=1;
  for(int i=0;i<4;i++)
  {
-   
   comprova=ForcaNOW[i];
   if(comprova==1)
   {
@@ -447,7 +442,6 @@ else
      lcd.print("  BOMB HAS BEEN "); 
      lcd.setCursor(0,1); 
      lcd.print("    DEFUSED!    ");     
-     ETAPA=2;
      delay(2000);
      ETAPA=4;
      
