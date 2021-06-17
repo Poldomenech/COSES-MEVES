@@ -238,9 +238,7 @@ switch (ETAPA)
   case 5:
   //etapa de reset
   tocaladenou();
-  
-  
-  
+   
   break;
  }
 }
