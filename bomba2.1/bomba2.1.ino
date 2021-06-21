@@ -52,10 +52,10 @@ unsigned long detonationTIME=0;
 
 //Etapes
 int ETAPA=1;
-unsigned long RESET=0;                                          //variable per reiniciar el joc
+unsigned long RESET=0;                                        //variable per reiniciar el joc
 
 //variables de desactivacio optima
-const int connectatPin=10;                                     //pin 10 es entrada de desactivador connectat
+const int connectatPin=10;                                    //pin 10 es entrada de desactivador connectat
 int estatconnectat=false;
 unsigned long defuseTIME=0;                                   //per carregar tempo de desactivacio
 const int tempsDEFUSING=5000;                                 //milis per desactivar                  
@@ -65,11 +65,11 @@ unsigned long bip2=0;
 unsigned long biptime2=2000;  
 
 //variables desactivacio FORZOSA
-const int ForcaPin[] = {A3,A2,A1,A0};                      //definir pins de FORZOSA
+const int ForcaPin[] = {A3,A2,A1,A0};                         //definir pins de FORZOSA
 const char ForcaPASS[]={1,1,1,1,0};                           //array de les 4 donat senyal
 char ForcaNOW[]={1,1,1,1,0};                                  //array amb estat entrades FORZOSA
-char ForcaPOTRA[]={1,1,1,1,0};                               //array que es modificara i sera la clau de FORZOSA
-int POTRA=0;                                               //per guardar entrada que FORZOSA
+char ForcaPOTRA[]={1,1,1,1,0};                                //array que es modificara i sera la clau de FORZOSA
+int POTRA=0;                                                  //per guardar entrada que FORZOSA
 
 int prova=0;  
 int validacio1=0;                                            //guarda les restes entre arrays ForcaNOW i ForcaPASS
@@ -147,7 +147,7 @@ digitalWrite(LedBomba,stateLedBomba);
 //********** MAIN *********************************************************
 void loop() 
 {
-  Serial.println(ETAPA);
+ // Serial.println(ETAPA);
                                  //inicia lcd
   
 switch (ETAPA)
